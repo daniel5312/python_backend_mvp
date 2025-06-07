@@ -19,8 +19,12 @@ def register_user(usuario: UsuarioCreate, db: Session = Depends(get_db)):
     if db_usuario:
         raise HTTPException(status_code=400, detail="El correo ya está registrado")
 
-    nuevo_usuario = Usuario(**usuario.dict())
+    nuevo_usuario = Usuario(
+        nombre=usuario.nombre,
+        email=usuario.email,
+        password=bcrypt.hash(usuario.password),
+    )
     db.add(nuevo_usuario)
     db.commit()
     db.refresh(nuevo_usuario)
-    return nuevo_usuario
+    return {"mensaje": "Usuario registrado correctamente"}
